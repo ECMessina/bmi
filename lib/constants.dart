@@ -11,6 +11,11 @@ class AppTextStyles {
     color: Color(0XFF8D8E98),
   );
 
+  static const textTextStyle = TextStyle(
+    fontSize: 25,
+    fontWeight: FontWeight.w500,
+  );
+
   static const numberTextStyle = TextStyle(
     fontSize: 50,
     fontWeight: FontWeight.w900,
@@ -28,7 +33,7 @@ class AppTextStyles {
   );
 
   static const bMITextStyle = TextStyle(
-    fontSize: 75,
+    fontSize: 70,
     fontWeight: FontWeight.bold,
   );
 

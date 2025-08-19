@@ -1,3 +1,3 @@
 # bmi
 
-A new Flutter project.
+An in progress BMI calculator.

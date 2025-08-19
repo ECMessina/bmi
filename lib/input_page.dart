@@ -1,5 +1,6 @@
 import 'package:bmi/calculator.dart';
 import 'package:bmi/constants.dart';
+import 'package:bmi/up_down_save_button.dart';
 import 'package:bmi/info_box.dart';
 import 'package:bmi/results.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,6 @@ class _InputPageState extends State<InputPage> {
   Future<void> initializeValues() async {
     prefs = await SharedPreferences.getInstance();
 
-    // height = prefs.getInt('height') == null ? 60 : prefs.getInt('height')!;
     height = prefs.getInt(kHeightKey) ?? 60;
     calculateHeight();
 
@@ -131,8 +131,33 @@ class _InputPageState extends State<InputPage> {
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: InfoBox(
+                        createdColor: kBoxColor,
+                        containerChild: Text(
+                          'User',
+                          style: AppTextStyles.textTextStyle,
+                          textAlign: TextAlign.center,
+                        ),
+                        onTapFunction: () {},
+                      ),
+                    ),
+                    Expanded(
+                      child: InfoBox(
+                        createdColor: kBoxColor,
+                        containerChild: Text(
+                          '4/14/1986',
+                          style: AppTextStyles.textTextStyle,
+                          textAlign: TextAlign.center,
+                        ),
+                        onTapFunction: () {},
+                      ),
+                    ),
+                  ],
+                ),
                 Expanded(
-                  flex: 2,
                   child: InfoBox(
                     createdColor: kBoxColor,
                     containerChild: Column(
@@ -142,25 +167,51 @@ class _InputPageState extends State<InputPage> {
                           'HEIGHT',
                           style: AppTextStyles.labelTextStyle,
                         ),
-                        Text(
-                          '$heightFeet\' $heightInches"',
-                          style: AppTextStyles.numberTextStyle,
-                        ),
-                        SliderTheme(
-                          data: sliderThemeData,
-                          child: Slider(
-                            value: height.toDouble(),
-                            min: 48,
-                            max: 78,
-                            onChanged: (double newValue) async {
-                              setState(() {
-                                height = newValue.round();
-                                calculateHeight();
-                                calcResultsInfo();
-                              });
-                              await prefs.setInt(kHeightKey, height);
-                            },
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 5,
+                          children: [
+                            UpDownSaveButton(
+                              onPressed: () async {
+                                setState(() {
+                                  if (heightInches > 0) {
+                                    heightInches--;
+                                  } else if (heightFeet > 0) {
+                                    heightFeet--;
+                                    heightInches = 11;
+                                  }
+                                  height = heightFeet * 12 + heightInches;
+                                  calculateHeight();
+                                  calcResultsInfo();
+                                });
+                                await prefs.setInt(kHeightKey, height);
+                              },
+                              icon: Icons.remove,
+                              iconColor: Colors.red,
+                            ),
+                            Text(
+                              '$heightFeet\' $heightInches"',
+                              style: AppTextStyles.numberTextStyle,
+                            ),
+                            UpDownSaveButton(
+                              onPressed: () async {
+                                setState(() {
+                                  if (heightInches < 11) {
+                                    heightInches++;
+                                  } else {
+                                    heightFeet++;
+                                    heightInches = 0;
+                                  }
+                                  height = heightFeet * 12 + heightInches;
+                                  calculateHeight();
+                                  calcResultsInfo();
+                                });
+                                await prefs.setInt(kHeightKey, height);
+                              },
+                              icon: Icons.add,
+                              iconColor: Color(0xFF24D876),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -168,62 +219,82 @@ class _InputPageState extends State<InputPage> {
                 ),
                 Expanded(
                   flex: 2,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: InfoBox(
-                          createdColor: kBoxColor,
-                          containerChild: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'WEIGHT',
-                                style: AppTextStyles.labelTextStyle,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                textBaseline: TextBaseline.alphabetic,
-                                children: [
-                                  Text(
-                                    weight.toString(),
-                                    style: AppTextStyles.numberTextStyle,
-                                  ),
-                                  const Text(
-                                    'lbs',
-                                    style: AppTextStyles.labelTextStyle,
-                                  ),
-                                ],
-                              ),
-                              Stack(
-                                children: [
-                                  buildGradientTrack(height, 80, 250),
-                                  SliderTheme(
-                                    data: sliderThemeData,
-                                    child: Slider(
-                                      value: weight.toDouble(),
-                                      min: 80,
-                                      max: 250,
-                                      onChanged: (double newValue) async {
-                                        setState(() {
-                                          weight = newValue.round();
-                                          calcResultsInfo();
-                                        });
-                                        await prefs.setInt(kWeightKey, weight);
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                  child: InfoBox(
+                    createdColor: kBoxColor,
+                    containerChild: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'WEIGHT',
+                          style: AppTextStyles.labelTextStyle,
                         ),
-                      ),
-                    ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            UpDownSaveButton(
+                              onPressed: () async {
+                                setState(() {
+                                  if (weight > 80) {
+                                    weight--;
+                                    calcResultsInfo();
+                                  }
+                                });
+                                await prefs.setInt(kWeightKey, weight);
+                              },
+                              icon: Icons.remove,
+                              iconColor: Colors.red,
+                            ),
+                            Text(
+                              weight.toString(),
+                              style: AppTextStyles.numberTextStyle,
+                            ),
+                            const Text(
+                              'lbs',
+                              style: AppTextStyles.labelTextStyle,
+                            ),
+                            UpDownSaveButton(
+                              onPressed: () async {
+                                setState(() {
+                                  if (weight < 250) {
+                                    weight++;
+                                    calcResultsInfo();
+                                  }
+                                });
+                                await prefs.setInt(kWeightKey, weight);
+                              },
+                              icon: Icons.add,
+                              iconColor: Color(0xFF24D876),
+                            ),
+                          ],
+                        ),
+                        Stack(
+                          children: [
+                            buildGradientTrack(height, 80, 250),
+                            SliderTheme(
+                              data: sliderThemeData,
+                              child: Slider(
+                                value: weight.toDouble(),
+                                min: 80,
+                                max: 250,
+                                onChanged: (double newValue) async {
+                                  setState(() {
+                                    weight = newValue.round();
+                                    calcResultsInfo();
+                                  });
+                                  await prefs.setInt(kWeightKey, weight);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
-                  flex: 3,
+                  flex: 2,
                   child: InfoBox(
                     createdColor: kBoxColor,
                     containerChild: Results(
@@ -232,6 +303,14 @@ class _InputPageState extends State<InputPage> {
                       interpretation: interpretation,
                       resultTextColor: resultTextColor,
                     ),
+                  ),
+                ),
+                InfoBox(
+                  createdColor: kBoxColor,
+                  containerChild: UpDownSaveButton(
+                    onPressed: () {},
+                    icon: Icons.save,
+                    iconColor: Color(0xFFEB1555),
                   ),
                 ),
               ],
