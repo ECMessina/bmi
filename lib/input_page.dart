@@ -25,10 +25,18 @@ class _InputPageState extends State<InputPage> {
   late Color resultTextColor;
   late SharedPreferences prefs;
 
+  late SliderThemeData sliderThemeData = SliderTheme.of(context).copyWith(
+    inactiveTrackColor: const Color(0xFF8D8E98),
+    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 13.0),
+    thumbColor: const Color(0xFFEB1555),
+    overlayShape: const RoundSliderOverlayShape(overlayRadius: 30.0),
+    overlayColor: const Color(0x29EB1555),
+  );
+
   @override
   void initState() {
-    initializeValues();
     super.initState();
+    initializeValues();
   }
 
   Future<void> initializeValues() async {
@@ -52,6 +60,9 @@ class _InputPageState extends State<InputPage> {
     resultText = calc.brainResult.result;
     interpretation = calc.brainResult.interpretation;
     resultTextColor = calc.brainResult.color;
+    sliderThemeData = sliderThemeData.copyWith(
+      activeTrackColor: resultTextColor,
+    );
   }
 
   void calculateHeight() {
@@ -59,53 +70,44 @@ class _InputPageState extends State<InputPage> {
     heightInches = height % 12;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    List<Color> generateColorGradientForWeightRange(
-      int minWeight,
-      int maxWeight,
-      int height,
-    ) {
-      List<Color> colors = [];
-      for (int weight = minWeight; weight <= maxWeight; weight++) {
-        Calculator calc = Calculator(height: height, weight: weight);
+  List<Color> generateColorGradientForWeightRange(
+    int minWeight,
+    int maxWeight,
+    int height,
+  ) {
+    List<Color> colors = [];
+    for (int weight = minWeight; weight <= maxWeight; weight++) {
+      Calculator calc = Calculator(height: height, weight: weight);
 
-        colors.add(calc.brainResult.color);
-      }
-      return colors;
+      colors.add(calc.brainResult.color);
     }
+    return colors;
+  }
 
-    Widget buildGradientTrack(int height, int minWeight, int maxWeight) {
-      List<Color> gradientColors = generateColorGradientForWeightRange(
-        minWeight,
-        maxWeight,
-        height,
-      );
-
-      return Center(
-        child: Container(
-          height: 4,
-          width: MediaQuery.sizeOf(context).width - 90,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: gradientColors,
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-          ),
-        ),
-      );
-    }
-
-    SliderThemeData sliderThemeData = SliderTheme.of(context).copyWith(
-      activeTrackColor: resultTextColor,
-      inactiveTrackColor: const Color(0xFF8D8E98),
-      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 13.0),
-      thumbColor: const Color(0xFFEB1555),
-      overlayShape: const RoundSliderOverlayShape(overlayRadius: 30.0),
-      overlayColor: const Color(0x29EB1555),
+  Widget buildGradientTrack(int height, int minWeight, int maxWeight) {
+    List<Color> gradientColors = generateColorGradientForWeightRange(
+      minWeight,
+      maxWeight,
+      height,
     );
 
+    return Center(
+      child: Container(
+        height: 4,
+        width: MediaQuery.sizeOf(context).width - 90,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return _loading
         ? const Center(
           child: SizedBox(
