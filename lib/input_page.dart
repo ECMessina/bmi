@@ -4,6 +4,7 @@ import 'package:bmi/up_down_save_button.dart';
 import 'package:bmi/info_box.dart';
 import 'package:bmi/results.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InputPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
+  DateTime date = DateTime.now();
   late int height;
   late int heightFeet;
   late int heightInches;
@@ -32,6 +34,8 @@ class _InputPageState extends State<InputPage> {
     overlayShape: const RoundSliderOverlayShape(overlayRadius: 30.0),
     overlayColor: const Color(0x29EB1555),
   );
+
+  String get formattedDate => DateFormat('MM-dd-yyyy').format(date);
 
   @override
   void initState() {
@@ -150,7 +154,7 @@ class _InputPageState extends State<InputPage> {
                       child: InfoBox(
                         createdColor: kBoxColor,
                         containerChild: Text(
-                          '4/14/1986',
+                          formattedDate,
                           style: AppTextStyles.textTextStyle,
                           textAlign: TextAlign.center,
                         ),
